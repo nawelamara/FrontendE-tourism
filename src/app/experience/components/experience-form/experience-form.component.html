@@ -1,0 +1,390 @@
+<div class="experience-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <h1>{{ isEditMode ? 'Edit Experience' : 'Create New Experience' }}</h1>
+    <p class="form-description">
+      {{ isEditMode ? 'Update the experience details below' : 'Fill in the details to create a new experience' }}
+    </p>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="experienceForm" (ngSubmit)="onSubmit()" class="experience-form">
+    <div class="form-sections">
+      
+      <!-- Basic Information -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Basic Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Experience Title</mat-label>
+              <input matInput formControlName="title" placeholder="Enter experience title">
+              <mat-error>{{ getFieldError('title') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Short Description</mat-label>
+              <textarea 
+                matInput 
+                formControlName="shortDescription" 
+                rows="2"
+                placeholder="Brief description for listings"
+              ></textarea>
+              <mat-hint>{{ experienceForm.get('shortDescription')?.value?.length || 0 }}/200 characters</mat-hint>
+              <mat-error>{{ getFieldError('shortDescription') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Description</mat-label>
+              <textarea 
+                matInput 
+                formControlName="description" 
+                rows="6"
+                placeholder="Detailed description of the experience"
+              ></textarea>
+              <mat-hint>{{ experienceForm.get('description')?.value?.length || 0 }}/2000 characters</mat-hint>
+              <mat-error>{{ getFieldError('description') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Location</mat-label>
+              <input matInput formControlName="location" placeholder="City, Country">
+              <mat-icon matSuffix>location_on</mat-icon>
+              <mat-error>{{ getFieldError('location') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Meeting Point</mat-label>
+              <input matInput formControlName="meetingPoint" placeholder="Specific meeting location">
+              <mat-icon matSuffix>place</mat-icon>
+              <mat-error>{{ getFieldError('meetingPoint') }}</mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Pricing & Details -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Pricing & Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Price</mat-label>
+              <input matInput type="number" formControlName="price" min="0" step="0.01">
+              <span matPrefix>$</span>
+              <mat-error>{{ getFieldError('price') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Currency</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option *ngFor="let currency of currencies" [value]="currency">
+                  {{ currency }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getFieldError('currency') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Duration (hours)</mat-label>
+              <input matInput type="number" formControlName="duration" min="0.5" step="0.5">
+              <mat-icon matSuffix>schedule</mat-icon>
+              <mat-error>{{ getFieldError('duration') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Max Participants</mat-label>
+              <input matInput type="number" formControlName="maxParticipants" min="1">
+              <mat-icon matSuffix>group</mat-icon>
+              <mat-error>{{ getFieldError('maxParticipants') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                <mat-option *ngFor="let category of categories" [value]="category">
+                  {{ category | titlecase }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getFieldError('category') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Difficulty Level</mat-label>
+              <mat-select formControlName="difficulty">
+                <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+                  {{ difficulty | titlecase }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getFieldError('difficulty') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-slide-toggle formControlName="isActive" class="active-toggle">
+              Active (visible to customers)
+            </mat-slide-toggle>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Images -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Images</mat-card-title>
+          <mat-card-subtitle>Add image URLs for the experience gallery</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div formArrayName="images">
+            <div 
+              *ngFor="let imageControl of getFormArray('images').controls; let i = index" 
+              class="array-item"
+            >
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Image URL {{ i + 1 }}</mat-label>
+                <input matInput [formControlName]="i" placeholder="https://example.com/image.jpg">
+                <mat-icon matSuffix>image</mat-icon>
+              </mat-form-field>
+              <button 
+                type="button" 
+                mat-icon-button 
+                color="warn" 
+                (click)="removeArrayItem('images', i)"
+                class="remove-button"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            mat-stroked-button 
+            (click)="addArrayItem('images')"
+            class="add-button"
+          >
+            <mat-icon>add</mat-icon>
+            Add Image
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Highlights -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Experience Highlights</mat-card-title>
+          <mat-card-subtitle>Key features and attractions of this experience</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div formArrayName="highlights">
+            <div 
+              *ngFor="let highlightControl of getFormArray('highlights').controls; let i = index" 
+              class="array-item"
+            >
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Highlight {{ i + 1 }}</mat-label>
+                <input matInput [formControlName]="i" placeholder="Enter a key highlight">
+                <mat-icon matSuffix>star</mat-icon>
+              </mat-form-field>
+              <button 
+                type="button" 
+                mat-icon-button 
+                color="warn" 
+                (click)="removeArrayItem('highlights', i)"
+                class="remove-button"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            mat-stroked-button 
+            (click)="addArrayItem('highlights')"
+            class="add-button"
+          >
+            <mat-icon>add</mat-icon>
+            Add Highlight
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- What's Included/Excluded -->
+      <div class="included-excluded-row">
+        <!-- What's Included -->
+        <mat-card class="form-section half-section">
+          <mat-card-header>
+            <mat-card-title>What's Included</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div formArrayName="included">
+              <div 
+                *ngFor="let includedControl of getFormArray('included').controls; let i = index" 
+                class="array-item"
+              >
+                <mat-form-field appearance="outline" class="array-field">
+                  <mat-label>Included Item {{ i + 1 }}</mat-label>
+                  <input matInput [formControlName]="i" placeholder="What's included">
+                  <mat-icon matSuffix>add_circle</mat-icon>
+                </mat-form-field>
+                <button 
+                  type="button" 
+                  mat-icon-button 
+                  color="warn" 
+                  (click)="removeArrayItem('included', i)"
+                  class="remove-button"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              mat-stroked-button 
+              (click)="addArrayItem('included')"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Item
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- What's Excluded -->
+        <mat-card class="form-section half-section">
+          <mat-card-header>
+            <mat-card-title>What's Not Included</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div formArrayName="excluded">
+              <div 
+                *ngFor="let excludedControl of getFormArray('excluded').controls; let i = index" 
+                class="array-item"
+              >
+                <mat-form-field appearance="outline" class="array-field">
+                  <mat-label>Excluded Item {{ i + 1 }}</mat-label>
+                  <input matInput [formControlName]="i" placeholder="What's not included">
+                  <mat-icon matSuffix>remove_circle</mat-icon>
+                </mat-form-field>
+                <button 
+                  type="button" 
+                  mat-icon-button 
+                  color="warn" 
+                  (click)="removeArrayItem('excluded', i)"
+                  class="remove-button"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              mat-stroked-button 
+              (click)="addArrayItem('excluded')"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Item
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Languages & Policies -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Languages & Policies</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <div class="languages-section">
+              <h4>Available Languages</h4>
+              <div formArrayName="languages">
+                <div 
+                  *ngFor="let languageControl of getFormArray('languages').controls; let i = index" 
+                  class="array-item"
+                >
+                  <mat-form-field appearance="outline" class="array-field">
+                    <mat-label>Language {{ i + 1 }}</mat-label>
+                    <mat-select [formControlName]="i">
+                      <mat-option *ngFor="let language of languages" [value]="language">
+                        {{ language }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button 
+                    type="button" 
+                    mat-icon-button 
+                    color="warn" 
+                    (click)="removeArrayItem('languages', i)"
+                    class="remove-button"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                mat-stroked-button 
+                (click)="addArrayItem('languages')"
+                class="add-button"
+              >
+                <mat-icon>add</mat-icon>
+                Add Language
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Cancellation Policy</mat-label>
+              <textarea 
+                matInput 
+                formControlName="cancellationPolicy" 
+                rows="4"
+                placeholder="Describe the cancellation policy"
+              ></textarea>
+              <mat-hint>{{ experienceForm.get('cancellationPolicy')?.value?.length || 0 }}/500 characters</mat-hint>
+              <mat-error>{{ getFieldError('cancellationPolicy') }}</mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button 
+        type="button" 
+        mat-stroked-button 
+        (click)="onCancel()"
+        [disabled]="isLoading"
+        class="cancel-button"
+      >
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        mat-raised-button 
+        color="primary"
+        [disabled]="experienceForm.invalid || isLoading"
+        class="submit-button"
+      >
+        <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        <span *ngIf="!isLoading">{{ isEditMode ? 'Update Experience' : 'Create Experience' }}</span>
+        <span *ngIf="isLoading">{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
+      </button>
+    </div>
+  </form>
+</div>
