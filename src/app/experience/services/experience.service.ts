@@ -5,8 +5,9 @@ import { catchError, map, finalize } from 'rxjs/operators';
 
 import { 
   Experience, 
+  Location,
   ExperienceSearchParams, 
-  ExperienceListResponse,
+  ExperienceSearchResponse,
   ApiResponse 
 } from '../models/experience.interface';
 
@@ -18,6 +19,7 @@ export const BASE_URL = 'http://localhost:3000/api'; // Update this with your ba
 })
 export class ExperienceService {
   private readonly apiUrl = `${BASE_URL}/experiences`;
+  private readonly locationsUrl = `${BASE_URL}/locations`;
   private loadingSubject = new BehaviorSubject<boolean>(false);
   
   // Public loading state observable
@@ -26,9 +28,23 @@ export class ExperienceService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Get all experiences with optional search parameters
+   * Get all available locations for experience search
    */
-  getExperiences(params?: ExperienceSearchParams): Observable<ExperienceListResponse> {
+  getLocations(): Observable<Location[]> {
+    this.setLoading(true);
+    
+    return this.http.get<ApiResponse<Location[]>>(this.locationsUrl)
+      .pipe(
+        map(response => response.data),
+        catchError(this.handleError),
+        finalize(() => this.setLoading(false))
+      );
+  }
+
+  /**
+   * Search experiences with filters
+   */
+  searchExperiences(params: ExperienceSearchParams): Observable<ExperienceSearchResponse> {
     this.setLoading(true);
     
     let httpParams = new HttpParams();
@@ -42,7 +58,32 @@ export class ExperienceService {
       });
     }
 
-    return this.http.get<ApiResponse<ExperienceListResponse>>(this.apiUrl, { params: httpParams })
+    return this.http.get<ApiResponse<ExperienceSearchResponse>>(`${this.apiUrl}/search`, { params: httpParams })
+      .pipe(
+        map(response => response.data),
+        catchError(this.handleError),
+        finalize(() => this.setLoading(false))
+      );
+  }
+
+  /**
+   * Get all experiences with optional search parameters (for admin)
+   */
+  getExperiences(params?: ExperienceSearchParams): Observable<ExperienceSearchResponse> {
+    this.setLoading(true);
+    
+    let httpParams = new HttpParams();
+    
+    if (params) {
+      Object.keys(params).forEach(key => {
+        const value = (params as any)[key];
+        if (value !== undefined && value !== null && value !== '') {
+          httpParams = httpParams.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<ApiResponse<ExperienceSearchResponse>>(this.apiUrl, { params: httpParams })
       .pipe(
         map(response => response.data),
         catchError(this.handleError),
@@ -107,6 +148,25 @@ export class ExperienceService {
   }
 
   /**
+   * Check experience availability for specific dates
+   */
+  checkAvailability(experienceId: string, startDate: string, endDate: string, participants: number): Observable<boolean> {
+    this.setLoading(true);
+    
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate)
+      .set('participants', participants.toString());
+
+    return this.http.get<ApiResponse<{ available: boolean }>>(`${this.apiUrl}/${experienceId}/availability`, { params })
+      .pipe(
+        map(response => response.data.available),
+        catchError(this.handleError),
+        finalize(() => this.setLoading(false))
+      );
+  }
+
+  /**
    * Set loading state
    */
   private setLoading(loading: boolean): void {
@@ -117,14 +177,14 @@ export class ExperienceService {
    * Handle HTTP errors
    */
   private handleError = (error: HttpErrorResponse): Observable<never> => {
-    let errorMessage = 'An unknown error occurred';
+    let errorMessage = 'Une erreur inconnue s\'est produite';
     
     if (error.error instanceof ErrorEvent) {
       // Client-side error
-      errorMessage = `Error: ${error.error.message}`;
+      errorMessage = `Erreur: ${error.error.message}`;
     } else {
       // Server-side error
-      errorMessage = error.error?.message || `Error Code: ${error.status}\nMessage: ${error.message}`;
+      errorMessage = error.error?.message || `Code d'erreur: ${error.status}\nMessage: ${error.message}`;
     }
     
     console.error('ExperienceService Error:', errorMessage);

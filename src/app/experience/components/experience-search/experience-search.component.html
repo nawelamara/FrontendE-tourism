@@ -1,0 +1,129 @@
+<!-- Experience Search Interface - Matching the UI style from reference images -->
+<div class="experience-search-container">
+  <!-- Hero Section with Background -->
+  <div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Découvrez des Expériences Uniques</h1>
+      <p class="hero-subtitle">Explorez les meilleures activités et aventures dans votre destination</p>
+    </div>
+  </div>
+
+  <!-- Search Form Card -->
+  <div class="search-card-container">
+    <mat-card class="search-card">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form">
+        
+        <!-- Location Selection -->
+        <div class="form-field">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Destination</mat-label>
+            <mat-select formControlName="locationId" placeholder="Choisissez votre destination">
+              <mat-option *ngFor="let location of locations" [value]="location.id">
+                <div class="location-option">
+                  <span class="location-name">{{ location.name }}</span>
+                  <span class="location-country">{{ location.city }}, {{ location.country }}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>location_on</mat-icon>
+            <mat-error>{{ getFieldError('locationId') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Date Range Selection -->
+        <div class="date-range-section">
+          <div class="date-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Date de début</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="startPicker" 
+                formControlName="startDate"
+                [min]="minDate"
+                readonly
+              >
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-error>{{ getFieldError('startDate') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="date-separator">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+
+          <div class="date-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Date de fin</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="endPicker" 
+                formControlName="endDate"
+                [min]="searchForm.get('startDate')?.value"
+                readonly
+              >
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+              <mat-error>{{ getFieldError('endDate') }}</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Participants Selection -->
+        <div class="form-field">
+          <mat-form-field appearance="outline" class="participants-field">
+            <mat-label>Nombre de participants</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="participants"
+              min="1"
+              max="20"
+            >
+            <mat-icon matSuffix>group</mat-icon>
+            <mat-error>{{ getFieldError('participants') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Search Button -->
+        <div class="search-button-container">
+          <button 
+            type="submit" 
+            mat-raised-button 
+            color="primary"
+            class="search-button"
+            [disabled]="searchForm.invalid || isLoading"
+          >
+            <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="!isLoading">search</mat-icon>
+            <span>{{ isLoading ? 'Recherche...' : 'Rechercher' }}</span>
+          </button>
+        </div>
+
+      </form>
+    </mat-card>
+  </div>
+
+  <!-- Popular Experiences Section -->
+  <div class="popular-section">
+    <div class="section-header">
+      <h2>Expériences Populaires</h2>
+      <p>Découvrez les activités les plus appréciées par nos voyageurs</p>
+    </div>
+    
+    <div class="popular-grid">
+      <div class="popular-card" *ngFor="let category of ['Adventure', 'Cultural', 'Food & Drink', 'Nature']">
+        <div class="popular-card-image">
+          <img [src]="'assets/images/categories/' + category.toLowerCase().replace(' & ', '-') + '.jpg'" 
+               [alt]="category"
+               onerror="this.src='assets/images/placeholder-category.jpg'">
+        </div>
+        <div class="popular-card-content">
+          <h3>{{ category }}</h3>
+          <p>Explorez les meilleures expériences {{ category.toLowerCase() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

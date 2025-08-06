@@ -16,11 +16,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Experience Module Components
+import { ExperienceSearchComponent } from './components/experience-search/experience-search.component';
+import { ExperienceResultsComponent } from './components/experience-results/experience-results.component';
 import { ExperienceListComponent } from './components/experience-list/experience-list.component';
 import { ExperienceDetailComponent } from './components/experience-detail/experience-detail.component';
 import { ExperienceFormComponent } from './components/experience-form/experience-form.component';
+import { ExperienceAdminComponent, ConfirmDialogComponent } from './components/experience-admin/experience-admin.component';
 
 // Routing
 import { ExperienceRoutingModule } from './experience-routing.module';
@@ -30,9 +38,13 @@ import { ExperienceService } from './services/experience.service';
 
 @NgModule({
   declarations: [
+    ExperienceSearchComponent,
+    ExperienceResultsComponent,
     ExperienceListComponent,
     ExperienceDetailComponent,
-    ExperienceFormComponent
+    ExperienceFormComponent,
+    ExperienceAdminComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +63,12 @@ import { ExperienceService } from './services/experience.service';
     MatIconModule,
     MatChipsModule,
     MatPaginatorModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSlideToggleModule,
+    MatTableModule,
+    MatTooltipModule
   ],
   providers: [
     ExperienceService

@@ -1,0 +1,286 @@
+<!-- Experience Search Results - Matching the UI style -->
+<div class="results-container">
+  
+  <!-- Header Section -->
+  <div class="results-header">
+    <div class="header-content">
+      <div class="search-info">
+        <h1>Expériences Disponibles</h1>
+        <p class="search-summary" *ngIf="getSearchSummary()">
+          <mat-icon>event</mat-icon>
+          {{ getSearchSummary() }}
+        </p>
+        <p class="results-count">
+          {{ totalExperiences }} expérience{{ totalExperiences > 1 ? 's' : '' }} trouvée{{ totalExperiences > 1 ? 's' : '' }}
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <!-- View Mode Toggle -->
+        <div class="view-toggle">
+          <button 
+            mat-icon-button 
+            [class.active]="viewMode === 'grid'"
+            (click)="setViewMode('grid')"
+            matTooltip="Vue grille"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            [class.active]="viewMode === 'list'"
+            (click)="setViewMode('list')"
+            matTooltip="Vue liste"
+          >
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+
+        <!-- Filter Toggle -->
+        <button 
+          mat-stroked-button 
+          (click)="toggleFilters()"
+          [class.active]="showFilters"
+          class="filter-button"
+        >
+          <mat-icon>tune</mat-icon>
+          Filtres
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Panel -->
+  <div class="filters-panel" [class.show]="showFilters">
+    <mat-card class="filters-card">
+      <form [formGroup]="filterForm" class="filters-form">
+        
+        <div class="filter-row">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Catégorie</mat-label>
+            <mat-select formControlName="category">
+              <mat-option value="">Toutes les catégories</mat-option>
+              <mat-option *ngFor="let category of categories" [value]="category">
+                {{ category | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Difficulté</mat-label>
+            <mat-select formControlName="difficulty">
+              <mat-option value="">Tous niveaux</mat-option>
+              <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+                {{ difficulty | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Trier par</mat-label>
+            <mat-select formControlName="sortBy">
+              <mat-option value="rating">Note</mat-option>
+              <mat-option value="price_asc">Prix croissant</mat-option>
+              <mat-option value="price_desc">Prix décroissant</mat-option>
+              <mat-option value="duration">Durée</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="price-range-section">
+          <h4>Gamme de prix</h4>
+          <div class="price-inputs">
+            <mat-form-field appearance="outline" class="price-field">
+              <mat-label>Prix min</mat-label>
+              <input matInput type="number" formControlName="minPrice" min="0">
+              <span matPrefix>€</span>
+            </mat-form-field>
+            <span class="price-separator">-</span>
+            <mat-form-field appearance="outline" class="price-field">
+              <mat-label>Prix max</mat-label>
+              <input matInput type="number" formControlName="maxPrice" min="0">
+              <span matPrefix>€</span>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer les filtres
+          </button>
+        </div>
+
+      </form>
+    </mat-card>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Recherche d'expériences...</p>
+  </div>
+
+  <!-- Results Grid/List -->
+  <div *ngIf="!isLoading" class="results-content">
+    
+    <!-- Grid View -->
+    <div *ngIf="viewMode === 'grid'" class="experiences-grid">
+      <mat-card 
+        *ngFor="let experience of experiences" 
+        class="experience-card"
+        (click)="viewExperience(experience.id!)"
+      >
+        <div class="card-image">
+          <img 
+            [src]="experience.images[0] || 'assets/images/placeholder-experience.jpg'" 
+            [alt]="experience.title"
+            onerror="this.src='assets/images/placeholder-experience.jpg'"
+          >
+          <div class="card-overlay">
+            <button 
+              mat-fab 
+              color="primary" 
+              (click)="bookExperience(experience, $event)"
+              class="book-button"
+            >
+              <mat-icon>event_available</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-card-content class="card-content">
+          <div class="card-header">
+            <h3>{{ experience.title }}</h3>
+            <div class="price">{{ formatPrice(experience.price, experience.currency) }}</div>
+          </div>
+
+          <p class="description">{{ experience.shortDescription }}</p>
+
+          <div class="card-details">
+            <div class="detail-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ experience.location.name }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ formatDuration(experience.duration) }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>group</mat-icon>
+              <span>Max {{ experience.maxParticipants }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="rating">
+              <mat-icon 
+                *ngFor="let star of getStarRating(experience.rating)" 
+                [class.filled]="star"
+              >
+                {{ star ? 'star' : 'star_border' }}
+              </mat-icon>
+              <span class="rating-text">{{ experience.rating }} ({{ experience.reviewCount }})</span>
+            </div>
+            
+            <mat-chip-list>
+              <mat-chip [class]="'difficulty-' + experience.difficulty">
+                {{ experience.difficulty | titlecase }}
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="viewMode === 'list'" class="experiences-list">
+      <mat-card 
+        *ngFor="let experience of experiences" 
+        class="experience-list-item"
+        (click)="viewExperience(experience.id!)"
+      >
+        <div class="list-item-content">
+          <div class="list-item-image">
+            <img 
+              [src]="experience.images[0] || 'assets/images/placeholder-experience.jpg'" 
+              [alt]="experience.title"
+              onerror="this.src='assets/images/placeholder-experience.jpg'"
+            >
+          </div>
+
+          <div class="list-item-info">
+            <div class="list-item-header">
+              <h3>{{ experience.title }}</h3>
+              <div class="rating">
+                <mat-icon 
+                  *ngFor="let star of getStarRating(experience.rating)" 
+                  [class.filled]="star"
+                >
+                  {{ star ? 'star' : 'star_border' }}
+                </mat-icon>
+                <span class="rating-text">{{ experience.rating }}</span>
+              </div>
+            </div>
+
+            <p class="list-description">{{ experience.shortDescription }}</p>
+
+            <div class="list-details">
+              <span class="detail-badge">
+                <mat-icon>location_on</mat-icon>
+                {{ experience.location.name }}
+              </span>
+              <span class="detail-badge">
+                <mat-icon>schedule</mat-icon>
+                {{ formatDuration(experience.duration) }}
+              </span>
+              <span class="detail-badge">
+                <mat-icon>group</mat-icon>
+                Max {{ experience.maxParticipants }}
+              </span>
+              <mat-chip [class]="'difficulty-' + experience.difficulty">
+                {{ experience.difficulty | titlecase }}
+              </mat-chip>
+            </div>
+          </div>
+
+          <div class="list-item-actions">
+            <div class="price">{{ formatPrice(experience.price, experience.currency) }}</div>
+            <button 
+              mat-raised-button 
+              color="primary"
+              (click)="bookExperience(experience, $event)"
+              class="book-button"
+            >
+              Réserver
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="experiences.length === 0" class="empty-state">
+      <mat-icon>explore_off</mat-icon>
+      <h2>Aucune expérience trouvée</h2>
+      <p>Essayez d'ajuster vos critères de recherche ou explorez d'autres destinations.</p>
+      <button mat-raised-button color="primary" routerLink="/experiences">
+        Nouvelle recherche
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator
+      *ngIf="experiences.length > 0"
+      [length]="totalExperiences"
+      [pageSize]="pageSize"
+      [pageIndex]="currentPage"
+      [pageSizeOptions]="[6, 12, 24, 48]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      class="results-paginator"
+    >
+    </mat-paginator>
+
+  </div>
+</div>

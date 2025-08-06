@@ -1,0 +1,414 @@
+.admin-container {
+  padding: 24px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.admin-header {
+  margin-bottom: 24px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+
+  .header-info {
+    h1 {
+      margin: 0 0 4px 0;
+      font-size: 2rem;
+      font-weight: 400;
+      color: #333;
+    }
+
+    .header-subtitle {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: flex-end;
+    }
+
+    .export-button {
+      min-width: 120px;
+    }
+
+    .create-button {
+      min-width: 180px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  }
+}
+
+.filters-section {
+  margin-bottom: 24px;
+
+  .filters-card {
+    padding: 20px;
+  }
+
+  .filters-form {
+    .filter-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .search-field {
+        flex: 2;
+        min-width: 250px;
+
+        @media (max-width: 768px) {
+          min-width: unset;
+        }
+      }
+
+      .filter-field {
+        flex: 1;
+        min-width: 150px;
+
+        @media (max-width: 768px) {
+          min-width: unset;
+        }
+      }
+
+      .clear-button {
+        height: 56px;
+        min-width: 100px;
+      }
+    }
+  }
+}
+
+.stats-section {
+  margin-bottom: 24px;
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+
+    .stat-card {
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .stat-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #e3f2fd;
+          color: #1976d2;
+
+          &.active {
+            background: #e8f5e8;
+            color: #2e7d32;
+          }
+
+          &.inactive {
+            background: #ffebee;
+            color: #d32f2f;
+          }
+
+          &.rating {
+            background: #fff3e0;
+            color: #f57c00;
+          }
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+
+        .stat-info {
+          .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+          }
+
+          .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+
+  p {
+    margin-top: 20px;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+.table-section {
+  .table-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .table-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .table-info {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+
+    .table-container {
+      overflow-x: auto;
+
+      .experiences-table {
+        width: 100%;
+        min-width: 1000px;
+
+        .mat-header-cell {
+          font-weight: 600;
+          color: #333;
+          border-bottom: 2px solid #e0e0e0;
+        }
+
+        .experience-row {
+          &:hover {
+            background: #f8f9fa;
+          }
+        }
+
+        // Column specific styles
+        .experience-image {
+          width: 60px;
+          height: 45px;
+          border-radius: 6px;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .experience-title {
+          .title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+          }
+
+          .subtitle {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .location-info {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+          color: #666;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: #999;
+          }
+        }
+
+        .price-info {
+          .price {
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 2px;
+          }
+
+          .duration {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .duration-info {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+          color: #666;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: #999;
+          }
+        }
+
+        .rating-info {
+          .rating-stars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 2px;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+              color: #ffc107;
+            }
+
+            span {
+              font-weight: 500;
+              color: #333;
+            }
+          }
+
+          .review-count {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 4px;
+
+          .view-button { color: #1976d2; }
+          .edit-button { color: #f57c00; }
+          .duplicate-button { color: #7b1fa2; }
+          .delete-button { color: #d32f2f; }
+
+          button {
+            &:hover {
+              background: rgba(0, 0, 0, 0.04);
+            }
+          }
+        }
+
+        // Category chips
+        mat-chip {
+          font-size: 11px;
+          min-height: 24px;
+
+          &.category-adventure { background-color: #e3f2fd; color: #1976d2; }
+          &.category-cultural { background-color: #f3e5f5; color: #7b1fa2; }
+          &.category-food-drink { background-color: #fff3e0; color: #f57c00; }
+          &.category-nature { background-color: #e8f5e8; color: #2e7d32; }
+          &.category-historical { background-color: #fce4ec; color: #c2185b; }
+          &.category-entertainment { background-color: #fff8e1; color: #f9a825; }
+          &.category-sports { background-color: #ffebee; color: #d32f2f; }
+          &.category-wellness { background-color: #e0f2f1; color: #00695c; }
+        }
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #666;
+
+      mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #ccc;
+        margin-bottom: 20px;
+      }
+
+      h3 {
+        margin: 0 0 12px 0;
+        font-weight: 400;
+      }
+
+      p {
+        margin-bottom: 24px;
+        font-size: 16px;
+      }
+    }
+
+    .table-paginator {
+      border-top: 1px solid #e0e0e0;
+      background: #fafafa;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .table-container {
+    .experiences-table {
+      min-width: 800px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
