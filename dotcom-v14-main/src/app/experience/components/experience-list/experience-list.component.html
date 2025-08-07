@@ -1,0 +1,176 @@
+<div class="experience-list-container">
+  <!-- Header -->
+  <mat-toolbar class="list-header">
+    <h1>Experiences</h1>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="createExperience()">
+      <mat-icon>add</mat-icon>
+      New Experience
+    </button>
+  </mat-toolbar>
+
+  <!-- Search and Filters -->
+  <mat-card class="search-card">
+    <mat-card-content>
+      <form [formGroup]="searchForm" class="search-form">
+        <div class="search-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search experiences</mat-label>
+            <input matInput formControlName="search" placeholder="Enter keywords...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="Enter location">
+            <mat-icon matSuffix>location_on</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-row">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option value="">All Categories</mat-option>
+              <mat-option *ngFor="let category of categories" [value]="category">
+                {{ category | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Difficulty</mat-label>
+            <mat-select formControlName="difficulty">
+              <mat-option value="">All Levels</mat-option>
+              <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+                {{ difficulty | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Min Price</mat-label>
+            <input matInput type="number" formControlName="minPrice" placeholder="0">
+            <span matPrefix>$</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Max Price</mat-label>
+            <input matInput type="number" formControlName="maxPrice" placeholder="1000">
+            <span matPrefix>$</span>
+          </mat-form-field>
+
+          <button mat-stroked-button (click)="clearFilters()" class="clear-button">
+            <mat-icon>clear</mat-icon>
+            Clear Filters
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading experiences...</p>
+  </div>
+
+  <!-- Experience Grid -->
+  <div *ngIf="!isLoading" class="experiences-grid">
+    <mat-card 
+      *ngFor="let experience of experiences" 
+      class="experience-card"
+      (click)="viewExperience(experience.id!)"
+    >
+      <div class="card-image">
+        <img 
+          [src]="experience.images[0] || 'assets/images/placeholder-experience.jpg'" 
+          [alt]="experience.title"
+          onerror="this.src='assets/images/placeholder-experience.jpg'"
+        >
+        <div class="card-actions">
+          <button 
+            mat-mini-fab 
+            color="accent" 
+            (click)="editExperience(experience.id!, $event)"
+            matTooltip="Edit Experience"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            mat-mini-fab 
+            color="warn" 
+            (click)="deleteExperience(experience, $event)"
+            matTooltip="Delete Experience"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <mat-card-content>
+        <div class="card-header">
+          <h3>{{ experience.title }}</h3>
+          <div class="price">{{ formatPrice(experience.price, experience.currency) }}</div>
+        </div>
+
+        <p class="description">{{ experience.shortDescription }}</p>
+
+        <div class="card-details">
+          <div class="detail-item">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ experience.location }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ experience.duration }}h</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>group</mat-icon>
+            <span>Max {{ experience.maxParticipants }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="rating">
+            <mat-icon 
+              *ngFor="let star of getStarRating(experience.rating)" 
+              [class.filled]="star"
+            >
+              {{ star ? 'star' : 'star_border' }}
+            </mat-icon>
+            <span class="rating-text">{{ experience.rating }} ({{ experience.reviewCount }})</span>
+          </div>
+          
+          <mat-chip-list>
+            <mat-chip [class]="'difficulty-' + experience.difficulty">
+              {{ experience.difficulty | titlecase }}
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && experiences.length === 0" class="empty-state">
+    <mat-icon>explore_off</mat-icon>
+    <h2>No experiences found</h2>
+    <p>Try adjusting your search criteria or create a new experience.</p>
+    <button mat-raised-button color="primary" (click)="createExperience()">
+      Create New Experience
+    </button>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator
+    *ngIf="!isLoading && experiences.length > 0"
+    [length]="totalExperiences"
+    [pageSize]="pageSize"
+    [pageIndex]="currentPage"
+    [pageSizeOptions]="[6, 12, 24, 48]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>

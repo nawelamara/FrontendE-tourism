@@ -1,0 +1,335 @@
+<!-- Experience Management Admin Panel - Matching the Management.PNG style -->
+<div class="admin-container">
+  
+  <!-- Header Section -->
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1>Gestion des Expériences</h1>
+        <p class="header-subtitle">Gérez toutes les expériences de votre plateforme</p>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button (click)="exportExperiences()" class="export-button">
+          <mat-icon>download</mat-icon>
+          Exporter
+        </button>
+        <button mat-raised-button color="primary" (click)="createExperience()" class="create-button">
+          <mat-icon>add</mat-icon>
+          Nouvelle Expérience
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters Section -->
+  <div class="filters-section">
+    <mat-card class="filters-card">
+      <form [formGroup]="searchForm" class="filters-form">
+        
+        <div class="filter-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Rechercher</mat-label>
+            <input matInput formControlName="search" placeholder="Titre, description, lieu...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Catégorie</mat-label>
+            <mat-select formControlName="category">
+              <mat-option value="">Toutes les catégories</mat-option>
+              <mat-option *ngFor="let category of categories" [value]="category">
+                {{ category | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Difficulté</mat-label>
+            <mat-select formControlName="difficulty">
+              <mat-option value="">Tous niveaux</mat-option>
+              <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+                {{ difficulty | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="">Tous</mat-option>
+              <mat-option value="active">Actif</mat-option>
+              <mat-option value="inactive">Inactif</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Trier par</mat-label>
+            <mat-select formControlName="sortBy">
+              <mat-option value="createdAt_desc">Plus récent</mat-option>
+              <mat-option value="createdAt_asc">Plus ancien</mat-option>
+              <mat-option value="title_asc">Titre A-Z</mat-option>
+              <mat-option value="title_desc">Titre Z-A</mat-option>
+              <mat-option value="price_asc">Prix croissant</mat-option>
+              <mat-option value="price_desc">Prix décroissant</mat-option>
+              <mat-option value="rating_desc">Meilleure note</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-stroked-button (click)="clearFilters()" class="clear-button">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+        </div>
+
+      </form>
+    </mat-card>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>explore</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ totalExperiences }}</div>
+            <div class="stat-label">Total Expériences</div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon active">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ experiences.filter(e => e.isActive).length }}</div>
+            <div class="stat-label">Actives</div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon inactive">
+            <mat-icon>pause_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ experiences.filter(e => !e.isActive).length }}</div>
+            <div class="stat-label">Inactives</div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon rating">
+            <mat-icon>star</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">
+              {{ experiences.length > 0 ? (experiences.reduce((sum, e) => sum + e.rating, 0) / experiences.length).toFixed(1) : '0' }}
+            </div>
+            <div class="stat-label">Note Moyenne</div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des expériences...</p>
+  </div>
+
+  <!-- Experiences Table -->
+  <div *ngIf="!isLoading" class="table-section">
+    <mat-card class="table-card">
+      
+      <div class="table-header">
+        <h2>Liste des Expériences</h2>
+        <div class="table-info">
+          {{ experiences.length }} sur {{ totalExperiences }} expériences
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="experiences" class="experiences-table">
+
+          <!-- Image Column -->
+          <ng-container matColumnDef="image">
+            <th mat-header-cell *matHeaderCellDef>Image</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="experience-image">
+                <img 
+                  [src]="experience.images[0] || 'assets/images/placeholder-experience.jpg'" 
+                  [alt]="experience.title"
+                  onerror="this.src='assets/images/placeholder-experience.jpg'"
+                >
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Titre</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="experience-title">
+                <div class="title">{{ experience.title }}</div>
+                <div class="subtitle">{{ experience.shortDescription | slice:0:50 }}...</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Location Column -->
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>Lieu</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="location-info">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ experience.location.name }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+            <td mat-cell *matCellDef="let experience">
+              <mat-chip [class]="'category-' + experience.category">
+                {{ experience.category | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Prix</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="price-info">
+                <div class="price">{{ formatPrice(experience.price, experience.currency) }}</div>
+                <div class="duration">{{ formatDuration(experience.duration) }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Duration Column -->
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef>Durée</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="duration-info">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatDuration(experience.duration) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Rating Column -->
+          <ng-container matColumnDef="rating">
+            <th mat-header-cell *matHeaderCellDef>Note</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="rating-info">
+                <div class="rating-stars">
+                  <mat-icon>star</mat-icon>
+                  <span>{{ experience.rating }}</span>
+                </div>
+                <div class="review-count">({{ experience.reviewCount }})</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let experience">
+              <mat-slide-toggle 
+                [checked]="experience.isActive"
+                (change)="toggleExperienceStatus(experience)"
+                [color]="getStatusColor(experience.isActive)"
+              >
+                {{ getStatusText(experience.isActive) }}
+              </mat-slide-toggle>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let experience">
+              <div class="action-buttons">
+                <button 
+                  mat-icon-button 
+                  (click)="viewExperience(experience.id!)"
+                  matTooltip="Voir les détails"
+                  class="view-button"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  (click)="editExperience(experience.id!)"
+                  matTooltip="Modifier"
+                  class="edit-button"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  (click)="duplicateExperience(experience)"
+                  matTooltip="Dupliquer"
+                  class="duplicate-button"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  (click)="deleteExperience(experience)"
+                  matTooltip="Supprimer"
+                  class="delete-button"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="experience-row"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="experiences.length === 0" class="empty-state">
+        <mat-icon>explore_off</mat-icon>
+        <h3>Aucune expérience trouvée</h3>
+        <p>Commencez par créer votre première expérience ou ajustez vos filtres de recherche.</p>
+        <button mat-raised-button color="primary" (click)="createExperience()">
+          <mat-icon>add</mat-icon>
+          Créer une expérience
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        *ngIf="experiences.length > 0"
+        [length]="totalExperiences"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="table-paginator"
+      >
+      </mat-paginator>
+
+    </mat-card>
+  </div>
+</div>

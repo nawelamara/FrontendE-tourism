@@ -1,0 +1,96 @@
+.app-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+  
+  .menu-button {
+    margin-right: 16px;
+  }
+  
+  .toolbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .logo {
+      height: 32px;
+      width: auto;
+    }
+    
+    .brand-text {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+  
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .currency {
+      font-weight: 500;
+    }
+  }
+}
+
+.sidenav-container {
+  position: absolute;
+  top: 64px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.sidenav {
+  width: 280px;
+  background: #fafafa;
+  border-right: 1px solid #e0e0e0;
+  
+  .mat-list-item {
+    height: 48px;
+    
+    &.active {
+      background: rgba(63, 81, 181, 0.1);
+      color: #3f51b5;
+      
+      .mat-icon {
+        color: #3f51b5;
+      }
+    }
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+  
+  .mat-subheader {
+    color: #666;
+    font-weight: 500;
+    margin-top: 16px;
+  }
+}
+
+.main-content {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100%;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .sidenav {
+    width: 100%;
+  }
+  
+  .toolbar-brand .brand-text {
+    display: none;
+  }
+}

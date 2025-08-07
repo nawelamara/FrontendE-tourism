@@ -1,0 +1,81 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
+    <mat-icon>menu</mat-icon>
+  </button>
+  
+  <div class="toolbar-brand">
+    <img src="assets/images/logo.png" alt="DOTCOM" class="logo" />
+    <span class="brand-text">DOTCOM AURORA</span>
+  </div>
+  
+  <span class="toolbar-spacer"></span>
+  
+  <div class="toolbar-actions">
+    <span class="currency">0.00 Tnd</span>
+    <button mat-icon-button>
+      <mat-icon>language</mat-icon>
+    </button>
+    <button mat-icon-button>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon matListIcon>dashboard</mat-icon>
+        <span>Accueil</span>
+      </a>
+      
+      <a mat-list-item routerLink="/hotels" routerLinkActive="active">
+        <mat-icon matListIcon>hotel</mat-icon>
+        <span>Hôtels</span>
+      </a>
+      
+      <a mat-list-item routerLink="/flights" routerLinkActive="active">
+        <mat-icon matListIcon>flight</mat-icon>
+        <span>Vols</span>
+      </a>
+      
+      <a mat-list-item routerLink="/experiences" routerLinkActive="active">
+        <mat-icon matListIcon>explore</mat-icon>
+        <span>Expériences</span>
+      </a>
+      
+      <a mat-list-item routerLink="/packages" routerLinkActive="active">
+        <mat-icon matListIcon>card_travel</mat-icon>
+        <span>Packages</span>
+      </a>
+      
+      <mat-divider></mat-divider>
+      
+      <h3 matSubheader>Administration</h3>
+      
+      <a mat-list-item routerLink="/admin/hotels" routerLinkActive="active">
+        <mat-icon matListIcon>hotel</mat-icon>
+        <span>Hotel Management</span>
+      </a>
+      
+      <a mat-list-item routerLink="/admin/tours" routerLinkActive="active">
+        <mat-icon matListIcon>tour</mat-icon>
+        <span>Tours Management</span>
+      </a>
+      
+      <a mat-list-item routerLink="/experiences/admin" routerLinkActive="active">
+        <mat-icon matListIcon>explore</mat-icon>
+        <span>Experience Management</span>
+      </a>
+      
+      <a mat-list-item routerLink="/admin/packages" routerLinkActive="active">
+        <mat-icon matListIcon>card_travel</mat-icon>
+        <span>Packages Management</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  
+  <mat-sidenav-content class="main-content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

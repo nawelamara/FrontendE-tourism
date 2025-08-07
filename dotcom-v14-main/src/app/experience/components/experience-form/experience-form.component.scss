@@ -1,0 +1,278 @@
+.experience-form-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 400;
+    color: #333;
+  }
+
+  .form-description {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+.experience-form {
+  .form-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+
+  .form-section {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    mat-card-header {
+      margin-bottom: 16px;
+
+      mat-card-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      mat-card-subtitle {
+        color: #666;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+    }
+
+    mat-card-content {
+      padding-top: 0;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .half-width {
+    flex: 1;
+  }
+
+  .third-width {
+    flex: 1;
+  }
+
+  .active-toggle {
+    margin-top: 8px;
+  }
+
+  // Array items styling
+  .array-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .array-field {
+      flex: 1;
+    }
+
+    .remove-button {
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+  }
+
+  .add-button {
+    margin-top: 8px;
+    color: #1976d2;
+    border-color: #1976d2;
+
+    &:hover {
+      background-color: rgba(25, 118, 210, 0.04);
+    }
+  }
+
+  // Included/Excluded section
+  .included-excluded-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+
+    .half-section {
+      margin: 0;
+    }
+  }
+
+  // Languages section
+  .languages-section {
+    width: 100%;
+
+    h4 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
+
+  .cancel-button {
+    min-width: 120px;
+  }
+
+  .submit-button {
+    min-width: 160px;
+    position: relative;
+
+    .button-spinner {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+// Form validation styling
+.mat-form-field {
+  &.ng-invalid.ng-touched {
+    .mat-form-field-outline-thick {
+      color: #f44336;
+    }
+  }
+}
+
+.mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .experience-form-container {
+    padding: 16px;
+  }
+
+  .form-header h1 {
+    font-size: 24px;
+  }
+
+  .experience-form {
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+
+      .half-width,
+      .third-width {
+        width: 100%;
+      }
+    }
+
+    .included-excluded-row {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .array-item {
+      flex-direction: column;
+      gap: 8px;
+
+      .remove-button {
+        align-self: flex-end;
+        margin-top: 0;
+      }
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    .cancel-button,
+    .submit-button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .experience-form-container {
+    padding: 12px;
+  }
+
+  .form-header {
+    margin-bottom: 20px;
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .form-description {
+      font-size: 14px;
+    }
+  }
+
+  .experience-form .form-sections {
+    gap: 16px;
+  }
+}
+
+// Custom Material Design overrides
+.mat-card {
+  border-radius: 8px;
+}
+
+.mat-form-field-appearance-outline {
+  .mat-form-field-outline {
+    border-radius: 6px;
+  }
+}
+
+.mat-raised-button {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.mat-stroked-button {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+// Success/Error snackbar styles (global)
+:host ::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .error-snackbar {
+    background-color: #f44336;
+    color: white;
+  }
+}
