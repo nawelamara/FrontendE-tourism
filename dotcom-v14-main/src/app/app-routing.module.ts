@@ -28,6 +28,10 @@ const routes: Routes = [
     loadChildren: () => import('./experience/experience.module').then(m => m.ExperienceModule)
   },
   {
+    path: 'experiences',
+    loadChildren: () => import('./experience/experience.module').then(m => m.ExperienceModule)
+  },
+  {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },

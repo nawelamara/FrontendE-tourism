@@ -21,6 +21,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatListModule } from '@angular/material/list';
 
 // Experience Module Components
 import { ExperienceSearchComponent } from './components/experience-search/experience-search.component';
@@ -68,7 +69,8 @@ import { ExperienceService } from './services/experience.service';
     MatNativeDateModule,
     MatSlideToggleModule,
     MatTableModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatListModule
   ],
   providers: [
     ExperienceService
